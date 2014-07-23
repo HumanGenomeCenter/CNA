@@ -16,49 +16,59 @@ date            # print date
 
 #set -xv
 
-R_BIN=/usr/local/package/r/3.0.2_icc_mkl/bin/R 
-#R_BIN=/usr/local/package/r/2.15.3_icc_mkl/bin/R 
-ASCAT_SRC=script/ASCAT.R
-
+######################################################################
 #
 # Assumed input directory
 #
 # input/<sample name>/<file name>
 #
-
-#
 # Input file setup
-#    BAFn.txt
-#    BAFt.txt
-#    LogRn.txt
-#    LogRt.txt
-COLUMN_START=11
-COLUMN_END=12
-
-EX_DIR="Example_${COLUMN_START}-${COLUMN_END}"
-
-#
-# R options
-#
-DATA_TYPE='matched_data'
-CHR_LIST='1:22'
-SNP6_OPTION='SNP6'
-
-OUTPUT_PREFIX=${EX_DIR}
-SAMPLE_NAME=${EX_DIR}
-
-
-######################################################################
-#
-# If the specified input data is not available, make it.
-#
+#    1. Germline_BAF.txt
+#    2. Tumor_BAF.txt
+#    3. Germline_LogR.txt
+#    4. Tumor_LogR.txt
+SAMPLE_DIR=Example
 BASE_FILES="
     BAFn.txt
     BAFt.txt
     LogRn.txt
     LogRt.txt
 "
+#
+# Columns to analyze.
+# Extract data column from COLUMN_START to COLUMN_END
+#
+COLUMN_START=11
+COLUMN_END=12
 
+#
+# R options
+#
+DATA_TYPE='matched_data' # matched_data for Tumor and Germline set,
+                         # unmatched_data for one sample
+CHR_LIST='1:22'          # Chromosomes to analyze
+                         # Example: '1:22,X,Y', '1:22', '1:24'
+SNP6_OPTION='SNP6'       # SNP6 option. # Either 'SNP6' or 'OTHER'
+
+######################################################################
+
+R_BIN=/usr/local/package/r/3.0.2_icc_mkl/bin/R 
+#R_BIN=/usr/local/package/r/2.15.3_icc_mkl/bin/R 
+ASCAT_SRC=script/ASCAT.R
+
+
+FIRST_FILE=`echo ${BASE_FILES} | cut -d ' ' -f1`
+COLUMN_NUM=`head -1 input/${SAMPLE_DIR}/${FIRST_FILE}`
+EX_DIR="${SAMPLE_DIR}_${COLUMN_START}-${COLUMN_END}"
+
+OUTPUT_PREFIX=${EX_DIR}
+SAMPLE_DIR=${EX_DIR}
+
+
+######################################################################
+#
+# If the specified input data is not available, make it.
+#
 COLUMNS=`seq -s ',' ${COLUMN_START} ${COLUMN_END}`
 
 FIRST_FILE=`echo ${BASE_FILES} | cut -d ' ' -f1 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
@@ -73,7 +83,7 @@ then
         OUTFILE=`echo ${FILE} | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
         echo "Output file: input/${EX_DIR}/${OUTFILE}"
 
-        cut -f1,2,3,${COLUMNS} input/Example/${FILE} > input/${EX_DIR}/${OUTFILE}
+        cut -f1,2,3,${COLUMNS} input/${SAMPLE_DIR}/${FILE} > input/${EX_DIR}/${OUTFILE}
     done
 fi
 
@@ -101,7 +111,7 @@ else
             ${CHR_LIST} \
             ${SNP6_OPTION} \
             ${OUTPUT_PREFIX} \
-            ${SAMPLE_NAME} \
+            ${SAMPLE_DIR} \
             ${TUMOR_LOGR} \
             ${TUMOR_BAF} \
             ${GERMLINE_LOGR} \
