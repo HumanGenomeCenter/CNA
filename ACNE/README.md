@@ -68,13 +68,24 @@ c) Copy annotationData to CNA-master/ACNE/annotationData like the following data
             |-- README.md
             `-- run_ACNE.pl
 
-2) Edit the following variables in ACNE.sh script.
+2) Perl script  
+Perl script 'run_ACNE.pl' uses the following modules. Please install.  
+    DateTime
+    Time::HiRes
+    Pod::Usage
+    Getopt::Long
+    Data::Dumper
+    Cwd
+    File::Basename
+    File::Copy
+
+3) Edit the following variables in ACNE.sh script.
 
     CHIP='GenomeWideSNP_6'
     SAMPLE_NAME='Test'
     OUTPUT_DIR='output'
 
-With the above example, ACNE.R reads data from <Working Directory>/rawData/Test/*.CEL files.  
+With the above example, ACNE.R reads data from CNA-master/ACNE/rawData/Test/*.CEL files.  
 GenomeWideSNP_6 is goint to be used as a chip data for analysis.  
-A merged output file 'All.tab' is going to be created at <Working Direcotry>/output/Test/GenomeWideSNP_6 .
+A merged output file 'All.tab' is going to be created at CNA-master/ACNE/output/Test/GenomeWideSNP_6 .
 
