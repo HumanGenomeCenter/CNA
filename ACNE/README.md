@@ -5,7 +5,7 @@ This is a simple set of pipeline scripts for
     aroma-project: ACNE: Allele-specific copy numbers using non-negative matrix factorization.
     (http://www.aroma-project.org/vignettes/ACNE)
 
-1) Data structure 
+1) Data structure  
 Download CNA-master.zip from GitHub and you will find CNA-master/ACNE directory.
 
 a) Scripts including
@@ -15,7 +15,7 @@ a) Scripts including
     run_ACNE.pl
 are found at CNA-master/ACNE/
 
-b) Create a directory 'rawData' at CNA-master/ACNE and place input data to analyze.
+b) Create a directory 'rawData' at CNA-master/ACNE and place input data (*.CEL files) to analyze.
 
 c) Copy annotationData to CNA-master/ACNE/annotationData like the following data structure.
 
