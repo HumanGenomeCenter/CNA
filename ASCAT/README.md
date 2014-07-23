@@ -7,16 +7,19 @@ ASCAT is a tool for accurate dissection of genome-wide allele-specific copy numb
 
 1)  Directory Structure
 
-ASCAT.sh needs to be placed in the [Working Directory]
+If you download CNA-master.zip from GitHub and extract it, 
 
-    [Working Directory]
-        |-- ASCAT.sh
-        `-- script
-            |-- ASCAT2.1
-            |   |-- ascat.R
-            |   |-- aspcf.R
-            |   `-- predictGG.R
-            `-- ASCAT.R
+    CNA-master
+        |-- README.md
+        |-- ACNE
+        `-- ASCAT
+            |-- ASCAT.sh
+            `-- script
+                |-- ASCAT2.1
+                |   |-- ascat.R
+                |   |-- aspcf.R
+                |   `-- predictGG.R
+                `-- ASCAT.R
 
 
 2)  Input data files
@@ -29,15 +32,18 @@ You need to prepare 4 files.
     Tumor_LogR.txt
 
 
-    [Working Directory]
-        |-- script
-        |   `-- ASCAT2.1
-        `-- input
-            `-- [Sample Name]
-                |-- Germline_BAF.txt
-                |-- Germline_LogR.txt
-                |-- Tumor_BAF.txt
-                `-- Tumor_LogR.txt
+    CNA-master
+        |-- README.md
+        |-- ACNE
+        `-- ASCAT
+            |-- script
+            |   `-- ASCAT2.1
+            `-- input
+                `-- [Sample Name]
+                    |-- Germline_BAF.txt
+                    |-- Germline_LogR.txt
+                    |-- Tumor_BAF.txt
+                    `-- Tumor_LogR.txt
 
 3)  Run ASCAT.sh
 
@@ -48,7 +54,7 @@ The first and second columns have
 
 b) Set arguments for ASCAT.R
 
-There are 9 rguments for ASCAT.R.
+There are 9 arguments for ASCAT.R.
 
     data type
     chromosome list
@@ -63,26 +69,32 @@ There are 9 rguments for ASCAT.R.
 
 4)  Output data files
 
-After running ASCAT.sh, output files are created at [Working Directory]/output .
+After running ASCAT.sh, output files are created at CNA-master/output .
 
-    [Working Directory]
-        |-- script
-        |   `-- ASCAT2.1
-        |-- input
-        |   `-- [Sample Name]
-        |       |-- Germline_BAF.txt
-        |       |-- Germline_LogR.txt
-        |       |-- Tumor_BAF.txt
-        |       `-- Tumor_LogR.txt
-        `-- output
-            `-- [Sample Name]
-               |-- [Sample Name].acfrac.txt
-               |-- [Sample Name].A.seg
-               |-- [Sample Name].B.seg
-               |-- [Sample Name].ploidy.txt
-               |-- [Sample Name].RData
-               |-- [Sample Name].total.seg
-               `-- *.png
+    CNA-master
+        |-- README.md
+        |-- ACNE
+        `-- ASCAT
+            |-- script
+            |   `-- ASCAT2.1
+            |       |-- ascat.R
+            |       |-- aspcf.R
+            |       `-- predictGG.R
+            |-- input
+            |   `-- [Sample Name]
+            |       |-- Germline_BAF.txt
+            |       |-- Germline_LogR.txt
+            |       |-- Tumor_BAF.txt
+            |       `-- Tumor_LogR.txt
+            `-- output
+                `-- [Sample Name]
+                   |-- [Sample Name].acfrac.txt
+                   |-- [Sample Name].A.seg
+                   |-- [Sample Name].B.seg
+                   |-- [Sample Name].ploidy.txt
+                   |-- [Sample Name].RData
+                   |-- [Sample Name].total.seg
+                   `-- *.png
 
 
 5) Caveats
