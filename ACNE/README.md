@@ -9,6 +9,7 @@ This is a simple set of pipeline scripts for
 Download CNA-master.zip from GitHub and you will find CNA-master/ACNE directory.
 
 a) Scripts including
+
     ACNE.R
     ACNE.sh
     run_ACNE.pl
@@ -69,7 +70,8 @@ c) Copy annotationData to CNA-master/ACNE/annotationData like the following data
             `-- run_ACNE.pl
 
 2) Perl script  
-Perl script 'run_ACNE.pl' uses the following modules. Please install.  
+Perl script 'run_ACNE.pl' uses the following modules. Please install.
+
     DateTime
     Time::HiRes
     Pod::Usage
