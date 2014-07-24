@@ -54,18 +54,56 @@ The first and second columns have
 
 b) Set arguments for ASCAT.R
 
+You need to set arguments in ASCAT.sh or ASCAT_ALL.sh.  
+
 There are 9 arguments for ASCAT.R.
 
     data type
+        Either 'matched_data' or 'unmatched_data'. 'matched_data' indicates that there are 2 sets of data. BAF and LogR data for germline and tumor. 'unmatched_data' indicates that there is only 1 set of BAF and LogR data.
     chromosome list
+        Specify the list of chromosomes to analyze. Examples are '1:22', '1,2,3', '1:22,X,Y'.
     SNP6 option
+        Either 'SNP6', or 'OTHER'
     output file prefix for *.RData, *.A.seg, *.B.seg, *.total.seg, *.ploidy.txt, *.acfrac.txt
     sample name
     Tumor LogR file name
     Tumor BAF file name
     Germline LogR file name
     Germline BAF file name
+    platform
+        "Affy100k"
+        "Affy250k_sty"
+        "Affy250k_nsp"
+        "Affy500k"
+        "AffySNP6"
+        "AffyOncoScan"
+        "Illumina109k"
+        "IlluminaCytoSNP"
+        "Illumina610k"
+        "Illumina660k"
+        "Illumina700k"
+        "Illumina1M" 
+        "Illumina2.5M"
 
+In ASCAT.sh or ASCAT_ALL.sh, there are the following variables, which are eventually passed to ASCAT.R.
+
+    SAMPLE_DIR
+        Input data directory in ASCAT/input/
+        Output data directory in ASCAT/output/
+    BASE_FILES
+        Input data file name in the following order
+            Tumor BAF file
+            Tumor LogR file
+            Germline BAF file
+            Germline LogR file
+    PLATFORM
+        Passed to platform in ASCAT.R. This is only for 'unmatched_data'.
+    CHR_LIST
+        Passed to chromosome list in ASCAT.R
+    SNP6_OPTION
+        Passed to SNP6 optio in ASCAT.R
+
+In ASCAT.sh, you need to specify start column and end column in data file to analyze. ASCAT.sh cuts only the columns and pass them to ASCAT.R.
 
 4)  Output data files
 
