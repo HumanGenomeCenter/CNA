@@ -21,22 +21,46 @@ date            # print date
 #
 # input/<sample name>/<file name>
 #
-# Input file setup
-#    1. Germline_BAF.txt
-#    2. Tumor_BAF.txt
-#    3. Germline_LogR.txt
-#    4. Tumor_LogR.txt
+# Input file setup for 'matched_data' in DATA_TYPE.
+#    1. Tumor_BAF.txt
+#    2. Tumor_LogR.txt
+#    3. Germline_BAF.txt
+#    4. Germline_LogR.txt
+#
+# Input file setup for 'unmatched_data' in DATA_TYPE.
+#    1. Tumor_BAF.txt
+#    2. Tumor_LogR.txt
+#
 SAMPLE_DIR=Example
 BASE_FILES="
-    BAFn.txt
     BAFt.txt
-    LogRn.txt
     LogRt.txt
+    BAFn.txt
+    LogRn.txt
 "
+FILE_COUNT=`echo ${BASE_FILES} | wc -w`
+if [ "${FILE_COUNT}" == "2" ]
+then
+    #
+    # platform
+    # "Affy100k"
+    # "Affy250k_sty"
+    # "Affy250k_nsp"
+    # "Affy500k"
+    # "AffySNP6"
+    # "AffyOncoScan"
+    # "Illumina109k"
+    # "IlluminaCytoSNP"
+    # "Illumina610k"
+    # "Illumina660k"
+    # "Illumina700k"
+    # "Illumina1M" 
+    # "Illumina2.5M"
+    PLATFORM="AffySNP6"
+else
+    PLATFORM=
+fi
 
-#
-# R options
-#
 DATA_TYPE='matched_data' # matched_data for Tumor and Germline set,
                          # unmatched_data for one sample
 CHR_LIST='1:22'          # Chromosomes to analyze
@@ -49,7 +73,6 @@ source SGE.sh
 R_BIN=/usr/local/package/r/3.0.2_icc_mkl/bin/R 
 #R_BIN=/usr/local/package/r/2.15.3_icc_mkl/bin/R 
 ASCAT_SRC=script/ASCAT.R
-
 
 FIRST_FILE=`echo ${BASE_FILES} | cut -d ' ' -f1`
 COLUMN_START=4
@@ -79,29 +102,28 @@ do
         fi
     done
 
-    GERMLINE_BAF=`echo ${BASE_FILES} | cut -d ' ' -f1 | sed "s/\.txt/_${COLUMN}.txt/"`
-    TUMOR_BAF=`echo ${BASE_FILES} | cut -d ' ' -f2 | sed "s/\.txt/_${COLUMN}.txt/"`
-    GERMLINE_LOGR=`echo ${BASE_FILES} | cut -d ' ' -f3 | sed "s/\.txt/_${COLUMN}.txt/"`
-    TUMOR_LOGR=`echo ${BASE_FILES} | cut -d ' ' -f4 | sed "s/\.txt/_${COLUMN}.txt/"`
-
-    if ${DEBUG}
+    TUMOR_BAF=`echo ${BASE_FILES} | cut -d ' ' -f1 | sed "s/\.txt/_${COLUMN}.txt/"`
+    TUMOR_LOGR=`echo ${BASE_FILES} | cut -d ' ' -f2 | sed "s/\.txt/_${COLUMN}.txt/"`
+    if [ "${FILE_COUNT}" == "4" ]
     then
-        ${R_BIN}
-    else
-        CMD="${CMD}
-             ${R_BIN} -q --vanilla --args \
-                ${DATA_TYPE} \
-                ${CHR_LIST} \
-                ${SNP6_OPTION} \
-                ${OUTPUT_PREFIX} \
-                ${SAMPLE_DIR} \
-                ${TUMOR_LOGR} \
-                ${TUMOR_BAF} \
-                ${GERMLINE_LOGR} \
-                ${GERMLINE_BAF} \
-            < ${ASCAT_SRC}"
-        HPC_run ASCAT "${CMD}" '4G' 'run'
+        GERMLINE_BAF=`echo ${BASE_FILES} | cut -d ' ' -f3 | sed "s/\.txt/_${COLUMN}.txt/"`
+        GERMLINE_LOGR=`echo ${BASE_FILES} | cut -d ' ' -f4 | sed "s/\.txt/_${COLUMN}.txt/"`
     fi
+
+    CMD="${CMD}
+         ${R_BIN} -q --vanilla --args \
+            ${DATA_TYPE} \
+            ${CHR_LIST} \
+            ${SNP6_OPTION} \
+            ${OUTPUT_PREFIX} \
+            ${SAMPLE_DIR} \
+            ${TUMOR_LOGR} \
+            ${TUMOR_BAF} \
+            ${GERMLINE_LOGR} \
+            ${GERMLINE_BAF} \
+            ${PLATFORM} \
+        < ${ASCAT_SRC}"
+    HPC_run ASCAT "${CMD}" '4G' 'test'
 
 done
 

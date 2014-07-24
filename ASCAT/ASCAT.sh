@@ -7,7 +7,6 @@
 #$ -e /home/eigos/Log
 #$ -cwd         # execute at the submitted dir
 
-
 pwd             # print current working directory
 hostname        # print hostname
 date            # print date
@@ -22,18 +21,50 @@ date            # print date
 #
 # input/<sample name>/<file name>
 #
-# Input file setup
-#    1. Germline_BAF.txt
-#    2. Tumor_BAF.txt
-#    3. Germline_LogR.txt
-#    4. Tumor_LogR.txt
+# Input file setup for 'matched_data' in DATA_TYPE.
+#    1. Tumor_BAF.txt
+#    2. Tumor_LogR.txt
+#    3. Germline_BAF.txt
+#    4. Germline_LogR.txt
+#
+# Input file setup for 'unmatched_data' in DATA_TYPE.
+#    1. Tumor_BAF.txt
+#    2. Tumor_LogR.txt
+#
 SAMPLE_DIR=Example
 BASE_FILES="
-    BAFn.txt
     BAFt.txt
-    LogRn.txt
     LogRt.txt
 "
+FILE_COUNT=`echo ${BASE_FILES} | wc -w`
+if [ "${FILE_COUNT}" == "2" ]
+then
+    #
+    # platform
+    # "Affy100k"
+    # "Affy250k_sty"
+    # "Affy250k_nsp"
+    # "Affy500k"
+    # "AffySNP6"
+    # "AffyOncoScan"
+    # "Illumina109k"
+    # "IlluminaCytoSNP"
+    # "Illumina610k"
+    # "Illumina660k"
+    # "Illumina700k"
+    # "Illumina1M" 
+    # "Illumina2.5M"
+    PLATFORM="AffySNP6"
+else
+    PLATFORM=
+fi
+
+DATA_TYPE='unmatched_data' # matched_data for Tumor and Germline set,
+                           # unmatched_data for one sample
+CHR_LIST='1:22'            # Chromosomes to analyze
+                           # Example: '1:22,X,Y', '1:22', '1:24', '1:2'
+SNP6_OPTION='SNP6'         # SNP6 option. # Either 'SNP6' or 'OTHER'
+
 #
 # Columns to analyze.
 # Extract data column from COLUMN_START to COLUMN_END
@@ -41,21 +72,11 @@ BASE_FILES="
 COLUMN_START=11
 COLUMN_END=12
 
-#
-# R options
-#
-DATA_TYPE='matched_data' # matched_data for Tumor and Germline set,
-                         # unmatched_data for one sample
-CHR_LIST='1:22'          # Chromosomes to analyze
-                         # Example: '1:22,X,Y', '1:22', '1:24'
-SNP6_OPTION='SNP6'       # SNP6 option. # Either 'SNP6' or 'OTHER'
-
 ######################################################################
 
 R_BIN=/usr/local/package/r/3.0.2_icc_mkl/bin/R 
 #R_BIN=/usr/local/package/r/2.15.3_icc_mkl/bin/R 
 ASCAT_SRC=script/ASCAT.R
-
 
 FIRST_FILE=`echo ${BASE_FILES} | cut -d ' ' -f1`
 COLUMN_NUM=`head -1 input/${SAMPLE_DIR}/${FIRST_FILE}`
@@ -87,35 +108,32 @@ then
     done
 fi
 
-GERMLINE_BAF=`echo ${BASE_FILES} | cut -d ' ' -f1 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
-TUMOR_BAF=`echo ${BASE_FILES} | cut -d ' ' -f2 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
-GERMLINE_LOGR=`echo ${BASE_FILES} | cut -d ' ' -f3 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
-TUMOR_LOGR=`echo ${BASE_FILES} | cut -d ' ' -f4 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
+TUMOR_BAF=`echo ${BASE_FILES} | cut -d ' ' -f1 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
+TUMOR_LOGR=`echo ${BASE_FILES} | cut -d ' ' -f2 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
+if [ "${FILE_COUNT}" == "4" ]
+then
+    GERMLINE_BAF=`echo ${BASE_FILES} | cut -d ' ' -f3 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
+    GERMLINE_LOGR=`echo ${BASE_FILES} | cut -d ' ' -f4 | sed "s/\.txt/_${COLUMN_START}-${COLUMN_END}.txt/"`
+fi
 
 echo "########################################"
-echo "Tumor LogR file    : ${TUMOR_LOGR}"
-echo "Tumor BAF file     : ${TUMOR_BAF}"
 echo "Germline LogR file : ${GERMLINE_LOGR}"
 echo "Germline BAF file  : ${GERMLINE_LOGR}"
+echo "Tumor LogR file    : ${TUMOR_LOGR}"
+echo "Tumor BAF file     : ${TUMOR_BAF}"
 echo "Output Direcotry   : ${OUTPUT_PREFIX}"
 echo ""
-echo "Type 'true' for R debugging, or 'false'"
-read DEBUG
 
-if ${DEBUG}
-then
-    ${R_BIN}
-else
-    ${R_BIN} -q --vanilla --args \
-            ${DATA_TYPE} \
-            ${CHR_LIST} \
-            ${SNP6_OPTION} \
-            ${OUTPUT_PREFIX} \
-            ${SAMPLE_DIR} \
-            ${TUMOR_LOGR} \
-            ${TUMOR_BAF} \
-            ${GERMLINE_LOGR} \
-            ${GERMLINE_BAF} \
-        < ${ASCAT_SRC}
-fi
+${R_BIN} -q --vanilla --args \
+        ${DATA_TYPE} \
+        ${CHR_LIST} \
+        ${SNP6_OPTION} \
+        ${OUTPUT_PREFIX} \
+        ${SAMPLE_DIR} \
+        ${TUMOR_LOGR} \
+        ${TUMOR_BAF} \
+        ${GERMLINE_LOGR} \
+        ${GERMLINE_BAF} \
+        ${PLATFORM} \
+    < ${ASCAT_SRC}
 

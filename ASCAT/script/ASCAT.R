@@ -23,14 +23,29 @@ if ( data_type == 'matched_data' )
     bafn         <- args[ 9 ]
     debug_on     <- args[ 10 ]
 } else {
-    debug_on     <- args[ 8 ]
+    # platform
+    # "Affy100k"
+    # "Affy250k_sty"
+    # "Affy250k_nsp"
+    # "Affy500k"
+    # "AffySNP6"
+    # "AffyOncoScan"
+    # "Illumina109k"
+    # "IlluminaCytoSNP"
+    # "Illumina610k"
+    # "Illumina660k"
+    # "Illumina700k"
+    # "Illumina1M" 
+    # "Illumina2.5M"
+    platform     <- args[ 8 ]
+    debug_on     <- args[ 9 ]
 }
 
 if ( ! is.na( debug_on ) )
 {
 # For testing.
-    data_type    <- 'matched_data'
-    chr_list     <- '1'
+    data_type    <- 'unmatched_data'
+    chr_list     <- '1:22,X'
     SNP6_option  <- 'SNP6'
 
     outfile      <- 'Example_11-12'
@@ -40,6 +55,7 @@ if ( ! is.na( debug_on ) )
     baft         <- 'BAFt_11-12.txt'
     logrn        <- 'LogRn_11-12.txt'
     bafn         <- 'BAFn_11-12.txt'
+    platform     <- 'AffySNP6'
 #
 }
 
@@ -50,8 +66,14 @@ outfile
 sample_name
 logrt
 baft
-logrn
-bafn
+if ( data_type == 'matched_data' )
+{
+    logrn
+    bafn
+} else if ( data_type == 'unmatched_data' )
+{
+    platform
+}
 
 #
 # Make data directories
@@ -238,11 +260,11 @@ if ( Y )
 chr_list_tmp <- eval( parse( text=paste( 'c(', chr_list, ')' ) ) )
 if ( X )
 {
-    ch_list_tmp <- c( chr_list_tmp, 'X' )
+    chr_list_tmp <- c( chr_list_tmp, 'X' )
 }
 if ( Y )
 {
-    ch_list_tmp <- c( chr_list_tmp, 'Y' )
+    chr_list_tmp <- c( chr_list_tmp, 'Y' )
 }
 
 # Load input files
@@ -257,8 +279,6 @@ if ( data_type == 'matched_data' )
     ascat.bc = ascat.loadData(  logrt,
                                 baft,
                                 chrs = chr_list_tmp )
-    setwd( ASCAT2.1_Dir )
-    source( "predictGG.R" )
 }
 
 #
@@ -266,10 +286,13 @@ if ( data_type == 'matched_data' )
 #
 if ( SNP6_option == 'SNP6' )
 {
-    tmp<-(ascat.bc$Germline_LogR)
-    ascat.bc$Germline_LogR <-preprocessSNP6LogR(tmp)
     tmp<-(ascat.bc$Tumor_LogR)
     ascat.bc$Tumor_LogR <-preprocessSNP6LogR(tmp)
+    if ( data_type == 'matched_data' )
+    {
+        tmp<-(ascat.bc$Germline_LogR)
+        ascat.bc$Germline_LogR <-preprocessSNP6LogR(tmp)
+    }
 }
 
 #
@@ -282,7 +305,16 @@ ascat.plotRawData(ascat.bc)
 # aspcf.R
 #
 setwd( ASCAT2.1_Dir )
-ascat.bc = ascat.aspcf(ascat.bc)
+if ( data_type == 'matched_data' )
+{
+    ascat.bc = ascat.aspcf(ascat.bc)
+
+} else {
+    source( "predictGG.R" )
+    ascat.gg = ascat.predictGermlineGenotypes(ascat.bc, platform)
+    ascat.bc = ascat.aspcf(ascat.bc,ascat.gg=ascat.gg)
+
+}
 
 #
 # plotSegmentedData
