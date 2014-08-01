@@ -123,7 +123,7 @@ do
             ${GERMLINE_BAF} \
             ${PLATFORM} \
         < ${ASCAT_SRC}"
-    HPC_run ASCAT "${CMD}" '4G' 'test'
+    HPC_run ASCAT "${CMD}" '4G' 'run'
 
 done
 
